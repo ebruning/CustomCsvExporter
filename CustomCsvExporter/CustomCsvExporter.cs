@@ -7,7 +7,9 @@ using Kofax.Eclipse.Base;
 namespace CustomCsvExporter
 {
     public class CustomCsvExporter : IPageIndexGenerator, IBatchIndexGenerator
-    {
+    {  
+        private IDictionary<string, string> _releaseData = null;
+
         public void SerializeSettings(Stream output){}
 
         public void DeserializeSettings(Stream input){}
@@ -48,6 +50,8 @@ namespace CustomCsvExporter
 
         public object StartIndex(IBatch batch, IDictionary<string, string> releaseData, string outputFileName)
         {
+            _releaseData = releaseData;
+
             using (FileStream fs = new FileStream(outputFileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
             using (StreamWriter writer = new StreamWriter(fs, Encoding.ASCII))
             {
@@ -81,7 +85,7 @@ namespace CustomCsvExporter
                 indexData = indexData.TrimEnd(',');
 
                 for (int count = 1; count < document.PageCount; count++ )
-                    writer.WriteLine(string.Format("{0},{1}", indexData, document.GetPage(count).OutputFileName));
+                    writer.WriteLine(string.Format("{0},{1}", indexData, _releaseData[string.Format("PageOutputFileName[{0}][{1}]", document.Number, count)]));
 
                 writer.Flush();
                 writer.Close();
