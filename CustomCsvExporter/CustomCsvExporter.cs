@@ -8,20 +8,11 @@ namespace CustomCsvExporter
 {
     public class CustomCsvExporter : IPageIndexGenerator, IBatchIndexGenerator
     {
-        public void SerializeSettings(Stream output)
-        {
-            
-        }
+        public void SerializeSettings(Stream output){}
 
-        public void DeserializeSettings(Stream input)
-        {
-            
-        }
+        public void DeserializeSettings(Stream input){}
 
-        public void Setup(IDictionary<string, string> releaseData)
-        {
-            
-        }
+        public void Setup(IDictionary<string, string> releaseData){}
 
         public Guid Id
         {
@@ -53,10 +44,7 @@ namespace CustomCsvExporter
             return true;
         }
 
-        void IBatchIndexGenerator.SerializeSample(IDictionary<string, string> releaseData, Stream output)
-        {
-            //SerializeSample(releaseData, output);
-        }
+        void IBatchIndexGenerator.SerializeSample(IDictionary<string, string> releaseData, Stream output){}
 
         public object StartIndex(IBatch batch, IDictionary<string, string> releaseData, string outputFileName)
         {
@@ -81,13 +69,26 @@ namespace CustomCsvExporter
 
         public void AppendIndex(IDocument document, string outputFileName)
         {
-            
+            using (FileStream fs = new FileStream(outputFileName, FileMode.Append, FileAccess.Write, FileShare.None))
+            using (StreamWriter writer = new StreamWriter(fs, Encoding.ASCII))
+            {
+                string indexData = string.Empty;
+
+                for (int count = 0; count < document.IndexDataCount; count++)
+                {
+                    indexData += string.Format("{0},", document.GetIndexDataValue(count));
+                }
+                indexData = indexData.TrimEnd(',');
+
+                for (int count = 1; count < document.PageCount; count++ )
+                    writer.WriteLine(string.Format("{0},{1}", indexData, document.GetPage(count).OutputFileName));
+
+                writer.Flush();
+                writer.Close();
+            }
         }
 
-        public void EndIndex(object handle, ReleaseResult result, string outputFileName)
-        {
-           
-        }
+        public void EndIndex(object handle, ReleaseResult result, string outputFileName){}
 
         public ReleaseMode WorkingMode
         {
@@ -95,14 +96,8 @@ namespace CustomCsvExporter
             set {}
         }
 
-        void IPageIndexGenerator.SerializeSample(IDictionary<string, string> releaseData, Stream output)
-        {
-            //SerializeSample(releaseData, output);
-        }
+        void IPageIndexGenerator.SerializeSample(IDictionary<string, string> releaseData, Stream output){}
 
-        public void CreateIndex(IPage page, IDictionary<string, string> releaseData, string outputFileName)
-        {
-            
-        }
+        public void CreateIndex(IPage page, IDictionary<string, string> releaseData, string outputFileName){}
     }
 }
