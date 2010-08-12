@@ -60,6 +60,22 @@ namespace CustomCsvExporter
 
         public object StartIndex(IBatch batch, IDictionary<string, string> releaseData, string outputFileName)
         {
+            using (FileStream fs = new FileStream(outputFileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+            using (StreamWriter writer = new StreamWriter(fs, Encoding.ASCII))
+            {
+                string indexNames = string.Empty;
+
+                for (int count = 0; count < batch.IndexFieldCount; count++ )
+                {
+                    indexNames += string.Format("{0},", batch.GetIndexField(count).Label);
+                }
+                indexNames = indexNames.TrimEnd(',');
+ 
+                writer.WriteLine(string.Format("{0},{1}", indexNames, "FileName"));
+                writer.Flush();
+                writer.Close();
+            }
+
             return null;
         }
 
